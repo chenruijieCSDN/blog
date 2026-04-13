@@ -1,0 +1,376 @@
+@import "@fontsource-variable/inter/wght.css";
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+/* Semantic palette — avoid Tailwind default neutrals (gray/slate/zinc). */
+@theme inline {
+  --color-bg: var(--app-bg);
+  --color-fg: var(--app-fg);
+  --color-fg-soft: var(--app-fg-soft);
+  --color-edge: var(--app-edge);
+  --color-accent: var(--app-accent);
+  --color-accent-glow: var(--app-accent-glow);
+  --color-accent-amber: var(--app-accent-amber);
+  --color-code-bg: var(--app-code-bg);
+  --radius-lg: 1.25rem;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Dark (default class from @nuxtjs/color-mode) */
+html.dark {
+  --app-bg: #0a0a0a;
+  --app-fg: #ededed;
+  --app-fg-soft: color-mix(in oklab, #ededed 62%, #0a0a0a);
+  --app-edge: rgba(255, 255, 255, 0.05);
+  --app-accent: #6b93c9;
+  --app-accent-glow: color-mix(in oklab, #6b93c9 28%, transparent);
+  --app-accent-amber: #c2873a;
+  --app-code-bg: #0d0d0d;
+  --app-editor-bg: #0d0d0d;
+  --app-editor-fg: #ededed;
+  --app-editor-placeholder: #a6a6a6;
+}
+
+/* Light */
+html.light {
+  --app-bg: #f6f5f2;
+  --app-fg: #0c0c0c;
+  --app-fg-soft: color-mix(in oklab, #0c0c0c 58%, #f6f5f2);
+  --app-edge: rgba(0, 0, 0, 0.08);
+  --app-accent: #4a6fa5;
+  --app-accent-glow: color-mix(in oklab, #4a6fa5 22%, transparent);
+  --app-accent-amber: #9a5f1a;
+  --app-code-bg: #111111;
+  --app-editor-bg: #ffffff;
+  --app-editor-fg: #111111;
+  --app-editor-placeholder: #7b7b7b;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-edge);
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+    text-rendering: optimizeLegibility;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    @apply min-h-dvh font-sans;
+    font-feature-settings: "ss01" on, "cv11" on;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    color: var(--color-fg);
+  }
+}
+
+.page-enter-active,
+.page-leave-active,
+.layout-enter-active,
+.layout-leave-active {
+  transition:
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-enter-from,
+.page-leave-to,
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+  transform: scale(0.985) translateY(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: none;
+  }
+
+  .page-enter-from,
+  .page-leave-to,
+  .layout-enter-from,
+  .layout-leave-to {
+    transform: none;
+  }
+}
+
+.spotlight-root::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+  background: radial-gradient(
+    520px circle at var(--spotlight-x, 50%) var(--spotlight-y, 40%),
+    var(--color-accent-glow),
+    transparent 42%
+  );
+}
+
+html.light .spotlight-root::before {
+  opacity: 0.35;
+}
+
+.spotlight-root::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+html.no-hole-bg .spotlight-root::after,
+html.no-hole-bg .spotlight-root::before {
+  display: none;
+}
+
+/* New Three.js hole background replaces pseudo-hole on normal pages. */
+html:not(.no-hole-bg) .spotlight-root::after {
+  display: none;
+}
+
+html.dark .spotlight-root::after {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(7, 7, 7, 0.98) 0 8%, transparent 9% 100%),
+    radial-gradient(circle at 50% 44%, rgba(106, 147, 201, 0.24) 0 14%, transparent 22% 100%),
+    radial-gradient(circle at 50% 44%, rgba(60, 91, 138, 0.18) 0 23%, transparent 33% 100%),
+    conic-gradient(
+      from 0deg at 50% 44%,
+      transparent 0 26%,
+      rgba(107, 147, 201, 0.16) 32%,
+      transparent 40% 58%,
+      rgba(194, 135, 58, 0.14) 66%,
+      transparent 74% 100%
+    );
+  filter: blur(0.2px) saturate(1.05);
+  transform-origin: 50% 44%;
+  animation:
+    hole-spin 24s linear infinite,
+    hole-breathe 8s ease-in-out infinite alternate;
+}
+
+html.light .spotlight-root::after {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.97) 0 8%, transparent 9% 100%),
+    radial-gradient(circle at 50% 44%, rgba(140, 170, 210, 0.18) 0 15%, transparent 23% 100%),
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.78) 0 25%, transparent 35% 100%),
+    conic-gradient(
+      from 0deg at 50% 44%,
+      transparent 0 24%,
+      rgba(80, 112, 160, 0.12) 34%,
+      transparent 42% 56%,
+      rgba(186, 136, 84, 0.12) 66%,
+      transparent 74% 100%
+    );
+  filter: saturate(1.06);
+  transform-origin: 50% 44%;
+  animation:
+    hole-spin-reverse 30s linear infinite,
+    hole-breathe 9s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-root::before {
+    display: none;
+  }
+}
+
+.writing-body {
+  @apply text-[1.04rem] leading-8;
+  color: color-mix(in oklab, var(--color-fg) 92%, var(--color-bg));
+}
+
+.toc-panel {
+  background: color-mix(in oklab, var(--color-bg) 92%, var(--color-fg) 8%);
+}
+
+.toc-panel a {
+  line-height: 1.55;
+}
+
+.toc-panel a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.toc-group details[open] > summary .toc-caret {
+  transform: rotate(0deg);
+}
+
+.toc-group summary .toc-caret {
+  display: inline-block;
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease;
+}
+
+/* Typora compatibility: normalize inline hardcoded black text to theme colors. */
+.writing-body :where(span, font)[style*="color"] {
+  color: var(--color-fg-soft) !important;
+}
+
+.writing-body :where(h1, h2, h3, h4, h5, h6)[style*="color"] {
+  color: var(--color-fg) !important;
+}
+
+.writing-body :where(h1, h2, h3) {
+  @apply font-bold tracking-tight text-fg;
+}
+
+.writing-body h1 {
+  @apply text-3xl md:text-4xl;
+}
+
+.writing-body h2 {
+  @apply mt-14 border-t border-edge/80 pt-8 text-[1.95rem] font-extrabold;
+}
+
+.writing-body h3 {
+  @apply mt-10 text-[1.45rem] font-bold;
+}
+
+.writing-body h4 {
+  @apply mt-8 text-xl font-bold;
+}
+
+.writing-body p {
+  @apply my-6;
+}
+
+.writing-body a {
+  @apply text-accent underline decoration-fg/15 underline-offset-4 transition-colors hover:text-accent-amber;
+}
+
+.writing-body ul,
+.writing-body ol {
+  @apply my-6 space-y-2.5 pl-5;
+}
+
+.writing-body li {
+  @apply marker:text-accent/80;
+}
+
+.writing-body blockquote {
+  @apply my-8 border-l-2 border-edge pl-5 text-fg/90;
+}
+
+.writing-body code:not(pre code) {
+  @apply rounded-md border border-edge bg-fg/[0.04] px-1.5 py-0.5 text-[0.9em] text-fg;
+}
+
+.writing-body pre {
+  border-color: var(--color-edge);
+  @apply my-8 overflow-x-auto rounded-xl border p-5 text-[0.9rem] leading-relaxed shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset];
+  background-color: var(--color-code-bg);
+  color: #e8edf4;
+}
+
+.writing-body table {
+  @apply my-8 w-full overflow-hidden rounded-xl border border-edge text-left text-sm;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.writing-body thead tr {
+  @apply bg-fg/[0.04];
+}
+
+.writing-body th,
+.writing-body td {
+  @apply border-b border-edge px-4 py-2.5;
+}
+
+.writing-body tbody tr:nth-child(2n) {
+  background: color-mix(in oklab, var(--color-bg) 90%, var(--color-fg) 10%);
+}
+
+.writing-body pre code {
+  @apply border-0 bg-transparent p-0 text-inherit;
+}
+
+html.light .toc-panel {
+  background: #f7f8fb;
+  border-color: #d9dde5;
+}
+
+html.light .writing-body {
+  color: #1a2433;
+}
+
+html.light .writing-body h1,
+html.light .writing-body h2,
+html.light .writing-body h3,
+html.light .writing-body h4 {
+  color: #101826;
+}
+
+html.light .writing-body pre {
+  background: #090b10;
+  color: #edf1f7;
+}
+
+html.light .writing-body pre code {
+  color: inherit;
+}
+
+.admin-preview.writing-body {
+  @apply text-sm;
+}
+
+.admin-preview.writing-body h1 {
+  @apply text-2xl;
+}
+
+.admin-preview.writing-body h2 {
+  @apply mt-8 text-xl;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hole-spin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1.04);
+  }
+}
+
+@keyframes hole-spin-reverse {
+  from {
+    transform: rotate(360deg) scale(1);
+  }
+  to {
+    transform: rotate(0deg) scale(1.03);
+  }
+}
+
+@keyframes hole-breathe {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
