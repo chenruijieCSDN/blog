@@ -58,18 +58,18 @@ npx prisma migrate dev
 npm run dev
 ```
 
-默认会先尝试释放 **8888** 端口再启动 Nuxt（见 [`scripts/dev-clean.ps1`](./scripts/dev-clean.ps1)）。  
+默认会先尝试释放 **8889** 端口再启动 Nuxt（见 [`scripts/dev-clean.ps1`](./scripts/dev-clean.ps1)）。  
 若需不经清理直接启动：`npm run dev:raw`。
 
-开发地址一般为：`http://localhost:8888`（若端口被占用，终端会提示实际端口）。
+开发地址一般为：`http://localhost:8889`（若端口被占用，终端会提示实际端口）。
 
 ## 常用脚本
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | 清理8888 占用后启动开发服务器 |
+| `npm run dev` | 清理8889 占用后启动开发服务器 |
 | `npm run dev:clean` | 同上（被 `dev` 调用） |
-| `npm run dev:raw` | 直接 `nuxt dev --port 8888` |
+| `npm run dev:raw` | 直接 `nuxt dev --port 8889` |
 | `npm run build` | 生产构建（输出 `.output/`） |
 | `npm run preview` | 本地预览生产构建 |
 | `npm run db:migrate` | 开发环境 Prisma 迁移 |

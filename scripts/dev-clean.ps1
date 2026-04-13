@@ -1,6 +1,6 @@
 $ErrorActionPreference = "SilentlyContinue"
 
-$port = 8888
+$port = 8889
 
 Write-Host "Checking processes on port $port..."
 $lines = netstat -ano | Select-String ":$port"

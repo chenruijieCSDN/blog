@@ -6,7 +6,7 @@
     "build": "nuxt build",
     "dev": "npm run dev:clean",
     "dev:clean": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-clean.ps1",
-    "dev:raw": "nuxt dev --port 8888",
+    "dev:raw": "nuxt dev --port 8889",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && prisma generate",
