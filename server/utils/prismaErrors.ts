@@ -10,6 +10,17 @@ export function throwFromPrismaError(error: unknown, opts: PrismaErrorOpts): nev
   const { logTag, failMessage } = opts;
   if (error && typeof error === "object" && "statusCode" in error) throw error;
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === "P2022") {
+      throw createError({
+        statusCode: 503,
+        statusMessage: "Database schema out of date",
+        data: {
+          code: error.code,
+          hint:
+            "表结构与代码不一致。请在服务器项目根执行: npm run db:deploy （或 npx prisma migrate deploy）",
+        },
+      });
+    }
     throw createError({
       statusCode: 400,
       statusMessage: "database constraint failed",

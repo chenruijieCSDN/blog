@@ -205,6 +205,7 @@ pm2 restart blog
 | 502 Bad Gateway | Node 未启动 / 端口不是 3000 | `pm2 logs blog`；`ss -lntp` 看端口；改 Nginx `proxy_pass` |
 | 页面能开但文章全空 | 库无数据或未迁移 | `npm run db:deploy`；后台发布文章 |
 | Prisma 报错 / 连库失败 | `DATABASE_URL` 错、MySQL 未监听本机 | 宝塔里核对库名、用户、密码；URL 用 `127.0.0.1` |
+| `P2022` / `column ... does not exist` | 库是旧表结构，缺新列 | 服务器项目根执行 **`npm run db:deploy`**（应用 `prisma/migrations` 里新迁移） |
 | 管理后台保存失败 | `ADMIN_PASSWORD` 与请求不一致 | 核对 `.env` 与表单密码 |
 | 站点 URL / OG / RSS 错 | `NUXT_PUBLIC_SITE_URL` 不是 https 域名 | 改 `.env` 后重新 `build` 并重启 |
 | 与旧项目冲突 | 多个站点反代到同一端口 | 每个应用独立端口，Nginx 指向对应端口 |
