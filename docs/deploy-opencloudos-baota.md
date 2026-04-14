@@ -110,12 +110,16 @@ npm run build
 
 ### D.1 PM2（推荐）
 
+**请用仓库里的 `ecosystem.config.cjs` 启动**，这样会从项目根目录读取 `.env`，避免 `DATABASE_URL` 在 PM2 里丢失（直接 `pm2 start .output/server/index.mjs` 不会自动加载 `.env`）。
+
 ```bash
 npm i -g pm2
-pm2 start .output/server/index.mjs --name blog
+cd /www/wwwroot/blog   # 按你的实际目录改
+pm2 delete blog 2>/dev/null
+pm2 start ecosystem.config.cjs
 pm2 save
 pm2 startup
-pm2 logs blog --lines 100
+pm2 logs blog --lines 50
 ```
 
 默认监听 **3000**（以终端输出为准；若不是 3000，下面 Nginx 里的端口改成一致）。
@@ -130,10 +134,14 @@ pm2 logs blog --lines 100
 
 ## E. 宝塔 Nginx 反向代理 + HTTPS
 
-1. 网站 → 你的站点 → **设置** → **反向代理** → 添加：
-   - 代理名称：`nuxt-blog`
-   - 目标 URL：`http://127.0.0.1:3000`（端口按实际改）
-2. **SSL** → Let’s Encrypt → 申请证书 → 开启 **强制 HTTPS**。
+1. **添加站点**时「域名」填你的公网域名，例如：`blog.ai-crj.top`（需已在 DNS 解析到本机 IP）。
+2. 网站 → 你的站点 → **设置** → **反向代理** → 添加：
+   - 代理名称：任意，如 `nuxt-blog`
+   - **代理目录：必须填 `/`（整站）**，不要填 `/api/`。本博客页面在 `/`，API 也在同进程下，只反代 `/api/` 会导致 `https://域名/` 打不开。
+   - 目标 URL：`http://127.0.0.1:3000`（端口按 PM2 日志改）
+   - 发送域名：`$host`（默认即可）
+3. **SSL** → Let’s Encrypt → 申请证书 → 开启 **强制 HTTPS**。
+4. `.env` 里 **`NUXT_PUBLIC_SITE_URL`** 必须与浏览器访问的地址一致，例如 `https://blog.ai-crj.top`（无末尾 `/`）。
 
 **高级 / 自定义配置里可参考**（与 Java 项目不同：这里是整站反代到 Node）：
 
@@ -189,6 +197,8 @@ pm2 restart blog
 | 管理后台保存失败 | `ADMIN_PASSWORD` 与请求不一致 | 核对 `.env` 与表单密码 |
 | 站点 URL / OG / RSS 错 | `NUXT_PUBLIC_SITE_URL` 不是 https 域名 | 改 `.env` 后重新 `build` 并重启 |
 | 与旧项目冲突 | 多个站点反代到同一端口 | 每个应用独立端口，Nginx 指向对应端口 |
+| `Environment variable not found: DATABASE_URL`（PM2 日志） | 直接 `pm2 start index.mjs` 未加载 `.env` | 使用 `pm2 start ecosystem.config.cjs`（见 D.1） |
+| 域名 502 / 空白页 | 反代「代理目录」写成了 `/api/` | 改为 **`/`** 整站反代到 `127.0.0.1:3000` |
 
 ---
 

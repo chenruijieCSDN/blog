@@ -93,7 +93,7 @@ npm run dev
    node .output/server/index.mjs
    ```
 
-   或使用 PM2等常驻运行；默认监听端口以 Nuxt 输出为准（常见为 **3000**）。  
+   或使用 PM2 常驻运行：`pm2 start ecosystem.config.cjs`（会加载项目根 `.env`）；默认端口以 Nuxt 输出为准（常见为 **3000**）。  
 4. 用 **Nginx / Caddy** 等将 `80` / `443` 反向代理到上述端口，并设置 `NUXT_PUBLIC_SITE_URL` 为公网 HTTPS 地址。
 
 静态导出（`nuxt generate`）**不适用**本项目：文章与 API 依赖服务端与数据库。
