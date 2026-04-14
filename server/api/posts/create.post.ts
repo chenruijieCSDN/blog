@@ -132,7 +132,30 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     if (error && typeof error === "object" && "statusCode" in error) throw error;
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw createError({ statusCode: 400, statusMessage: "database constraint failed" });
+      throw createError({
+        statusCode: 400,
+        statusMessage: "database constraint failed",
+        data: { code: error.code, hint: error.message.slice(0, 200) },
+      });
+    }
+    const errName = error && typeof error === "object" ? (error as { name?: string }).name : "";
+    if (errName === "PrismaClientInitializationError") {
+      const hint = error instanceof Error ? error.message.slice(0, 200) : "unknown error";
+      console.error("[api/posts/create]", error);
+      throw createError({
+        statusCode: 503,
+        statusMessage: "Database connection failed",
+        data: { hint },
+      });
+    }
+    if (errName === "PrismaClientUnknownRequestError") {
+      const hint = error instanceof Error ? error.message.slice(0, 200) : "unknown error";
+      console.error("[api/posts/create]", error);
+      throw createError({
+        statusCode: 500,
+        statusMessage: `Failed to create post: ${hint}`,
+        data: { hint },
+      });
     }
     console.error("[api/posts/create]", error);
     const hint =
@@ -140,6 +163,7 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 500,
       statusMessage: `Failed to create post: ${hint}`,
+      data: { hint },
     });
   }
 });

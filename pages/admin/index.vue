@@ -230,6 +230,26 @@ function fmtDate(value: string | null) {
   return d.toLocaleDateString("zh-CN");
 }
 
+/** $fetch 失败时：error.data 为响应 JSON；hint 在 error.data.data.hint */
+function fetchErrorMessage(e: unknown, fallback: string): string {
+  if (!e || typeof e !== "object") return fallback;
+  const o = e as Record<string, unknown>;
+  const body = o.data;
+  if (body && typeof body === "object") {
+    const b = body as Record<string, unknown>;
+    const nested = b.data;
+    if (nested && typeof nested === "object") {
+      const hint = (nested as Record<string, unknown>).hint;
+      if (typeof hint === "string" && hint.trim()) return hint;
+    }
+    const sm = b.statusMessage;
+    if (typeof sm === "string" && sm.trim()) return sm;
+  }
+  if (typeof o.statusMessage === "string" && o.statusMessage.trim()) return o.statusMessage;
+  if (typeof o.message === "string" && o.message.trim()) return o.message;
+  return fallback;
+}
+
 async function refreshPosts() {
   loadingList.value = true;
   try {
@@ -328,12 +348,7 @@ async function save() {
     await clearNuxtData();
     await refreshNuxtData();
   } catch (e: unknown) {
-    err.value =
-      e && typeof e === "object" && "data" in e
-        ? String((e as { data?: { statusMessage?: string } }).data?.statusMessage ?? "保存失败")
-        : e instanceof Error
-          ? e.message
-          : "保存失败";
+    err.value = fetchErrorMessage(e, e instanceof Error ? e.message : "保存失败");
   } finally {
     saving.value = false;
   }
@@ -402,12 +417,7 @@ async function removePost() {
     await clearNuxtData();
     await refreshNuxtData();
   } catch (e: unknown) {
-    err.value =
-      e && typeof e === "object" && "data" in e
-        ? String((e as { data?: { statusMessage?: string } }).data?.statusMessage ?? "删除失败")
-        : e instanceof Error
-          ? e.message
-          : "删除失败";
+    err.value = fetchErrorMessage(e, e instanceof Error ? e.message : "删除失败");
   }
 }
 
