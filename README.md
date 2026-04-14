@@ -2,6 +2,8 @@
 
 基于 **Nuxt 3** 的个人博客与作品展示站点：文章存 **MySQL**（Prisma），支持标签、搜索、时间轴、暗色模式、SEO（sitemap / RSS）、后台 Markdown 管理与 Giscus 评论（可选）。
 
+**线上地址：** [https://blog.crj-ai.top](https://blog.crj-ai.top) · **仓库：** [github.com/chenruijieCSDN/blog](https://github.com/chenruijieCSDN/blog) · **首日部署排障记录：** [docs/first-deploy-day-one.md](./docs/first-deploy-day-one.md)
+
 ## 技术栈
 
 - [Nuxt 3](https://nuxt.com/) · Vue 3 · TypeScript  
