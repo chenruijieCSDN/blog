@@ -10,8 +10,11 @@ function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return out;
   const text = fs.readFileSync(filePath, "utf8");
   for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim();
+    let trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
+    if (trimmed.toLowerCase().startsWith("export ")) {
+      trimmed = trimmed.slice(7).trim();
+    }
     const eq = trimmed.indexOf("=");
     if (eq <= 0) continue;
     const key = trimmed.slice(0, eq).trim();

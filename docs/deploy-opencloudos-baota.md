@@ -96,12 +96,23 @@ cp .env.example .env
 
 ## D. 构建与启动（服务器）
 
+**重要：** 下面凡是写「项目根目录」的路径，都是**示例**。你必须先 `cd` 到你**真实克隆代码的目录**（例如 B.5 里用的 `/www/wwwroot/blog.crj-ai.top`，或宝塔「网站根目录」里你放仓库的路径）。**不要**使用文档里可能出现的占位符 `/path/to/blog`，该目录不存在。
+
+在终端里可先定位：
+
+```bash
+ls /www/wwwroot
+# 或（若已克隆过仓库）
+find /www/wwwroot -maxdepth 3 -name "ecosystem.config.cjs" 2>/dev/null
+```
+
 在项目根目录：
 
 ```bash
-cd /www/wwwroot/blog.crj-ai.top   # 按你的实际目录改
+cd /www/wwwroot/blog.crj-ai.top   # 改成你机器上的真实路径
 
 npm install
+# 若仓库根目录已有 package-lock.json，可改用：npm ci
 npm run db:deploy
 npm run build
 ```
@@ -114,7 +125,7 @@ npm run build
 
 ```bash
 npm i -g pm2
-cd /www/wwwroot/blog   # 按你的实际目录改
+cd /www/wwwroot/blog.crj-ai.top   # 与上面「项目根目录」一致，按实际改
 pm2 delete blog 2>/dev/null
 pm2 start ecosystem.config.cjs
 pm2 save
@@ -197,7 +208,7 @@ pm2 restart blog
 | 管理后台保存失败 | `ADMIN_PASSWORD` 与请求不一致 | 核对 `.env` 与表单密码 |
 | 站点 URL / OG / RSS 错 | `NUXT_PUBLIC_SITE_URL` 不是 https 域名 | 改 `.env` 后重新 `build` 并重启 |
 | 与旧项目冲突 | 多个站点反代到同一端口 | 每个应用独立端口，Nginx 指向对应端口 |
-| `Environment variable not found: DATABASE_URL`（PM2 日志） | 直接 `pm2 start index.mjs` 未加载 `.env` | 使用 `pm2 start ecosystem.config.cjs`（见 D.1） |
+| `Environment variable not found: DATABASE_URL` | 项目根 **`.env` 里没有** `DATABASE_URL`；或写了 **`export DATABASE_URL=`** 旧版解析失败；或未用 ecosystem 启动 | 在 **`pm2 describe blog` 的 exec cwd** 下编辑 `.env`，保证一行 `DATABASE_URL="mysql://…"`（推荐引号）；`git pull` 后已支持 `export` 前缀；仍用 **`pm2 start ecosystem.config.cjs`** 并 **`pm2 restart blog --update-env`** |
 | 域名 502 / 空白页 | 反代「代理目录」写成了 `/api/` | 改为 **`/`** 整站反代到 `127.0.0.1:3000` |
 
 ---
