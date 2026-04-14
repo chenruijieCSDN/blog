@@ -134,6 +134,12 @@ export default defineEventHandler(async (event) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       throw createError({ statusCode: 400, statusMessage: "database constraint failed" });
     }
-    throw createError({ statusCode: 500, statusMessage: "Failed to create post" });
+    console.error("[api/posts/create]", error);
+    const hint =
+      error instanceof Error ? error.message.slice(0, 200) : "unknown error";
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to create post: ${hint}`,
+    });
   }
 });

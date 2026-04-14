@@ -1,10 +1,11 @@
 import { signAdminSession } from "../../utils/adminToken";
+import { getAdminPassword, getAdminSessionSecret } from "../../utils/adminEnv";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
   const body = await readBody<{ password?: string }>(event).catch(() => ({}));
   const password = body.password ?? "";
-  const expected = config.adminPassword;
+  const expected = getAdminPassword(event);
   if (!expected) {
     throw createError({
       statusCode: 503,
@@ -14,7 +15,8 @@ export default defineEventHandler(async (event) => {
   if (password !== expected) {
     throw createError({ statusCode: 401, statusMessage: "Invalid password" });
   }
-  const token = signAdminSession(config.adminSessionSecret);
+  const secret = getAdminSessionSecret(event) || config.adminSessionSecret;
+  const token = signAdminSession(secret);
   setCookie(event, "admin_session", token, {
     httpOnly: true,
     path: "/",
