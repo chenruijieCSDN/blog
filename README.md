@@ -13,7 +13,7 @@
 
 ## 环境要求
 
-- **Node.js** 20 LTS（推荐）或 18+  
+- **Node.js** 20 LTS（**不要用 18**：与本项目依赖与构建脚本不兼容）  
 - **MySQL** 5.7+ / 8.x  
 - Windows 开发时建议使用 PowerShell（`dev:clean` 脚本依赖）
 
